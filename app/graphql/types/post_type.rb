@@ -3,11 +3,14 @@ module Types
     field :id, ID, null: false do
       description "This post's id."
     end
-    field :title, String, null: true do
+    field :group, GroupType, null: false do
+      description "This post's group."
+    end
+    field :title, String, null: false do
       description "This post's title."
     end
-    field :body, String, null: true do
-      description "This post's body, the main content of post."
+    field :price, Integer, null: true do
+      description "This price, if listed, in the post."
     end
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false do
       description "When the post was created"
@@ -15,11 +18,17 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false do
       description "Last time post was updated"
     end
-    field :author_id, Integer, null: false do
-      description "Id of the post author"
+    field :location, String, null: true do
+      description "The post's location, if any, provided in the post."
     end
-    field :author, AuthorType, null: false do
-      description "Author as object"
+    field :images, String, null: true do
+      description "Images listed in the post, if any"
+    end
+    field :text, String, null: false do
+      description "The main text of the post."
+    end
+    field :link, String, null: false do
+      description "Permalink to the post."
     end
   end
 end

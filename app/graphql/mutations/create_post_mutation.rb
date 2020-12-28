@@ -1,21 +1,34 @@
 module Mutations
   class CreatePostMutation < BaseMutation
     field :post, Types::PostType, null: false
-
+    
+    argument :id, ID, required: true do
+      description "This post's required id. It will autoincrement, but should be set to the FB value"
+    end
+    argument :group, Types::GroupType, required: true do
+      description "This post's group. It expects a Group type object and is required."
+    end
     argument :title, String, required: true do
-      description "The title field is a string type and is required for a new Post to be created."
+      description "This post's title. A string, cannot be null"
+    end
+    argument :price, Integer, required: false do
+      description "This price as an integer, if listed, in the post. Sometimes there will not be a price."
+    end
+    argument :location, String, required: false do
+      description "The post's location as string, if any, provided in the post. Sometimes there will not be a location"
+    end
+    argument :images, String, required: false do
+      description "String of Images listed in the post, if any. Sometimes there will not be images."
+    end
+    argument :text, String, required: true do
+      description "The main text of the post. It expects a string and is required."
+    end
+    argument :link, String, required: true do
+      description "Permalink to the post. String should be automatically determined by groupID and postID."
     end
 
-    argument :body, String, required: true do
-      description "This is the post's main content, it is called the body and it expects a string."
-    end
-
-    argument :author, Integer, required: true do
-      description "This is the ID of the post's author"
-    end
-
-    def resolve(title:, body:, author:)
-      @post = Post.new(title: title, body: body, author: Author.find_by_id(author))
+    def resolve(id:, group:, title:, price:, location:, images:, text:, link:)
+      @post = Post.new(id: id, group: group, title: title, price: price, location: location, images: images, text: text, link: link)
 
       if (@post.save)
         {
