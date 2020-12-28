@@ -5,7 +5,7 @@ module Mutations
     argument :id, ID, required: true do
       description "This post's required id. It will autoincrement, but should be set to the FB value"
     end
-    argument :group, Types::GroupType, required: true do
+    argument :group_id, Integer, required: true do
       description "This post's group. It expects a Group type object and is required."
     end
     argument :title, String, required: true do
@@ -27,8 +27,8 @@ module Mutations
       description "Permalink to the post. String should be automatically determined by groupID and postID."
     end
 
-    def resolve(id:, group:, title:, price:, location:, images:, text:, link:)
-      @post = Post.new(id: id, group: group, title: title, price: price, location: location, images: images, text: text, link: link)
+    def resolve(id:, group_id:, title:, price:, location:, images:, text:, link:)
+      @post = Post.new(id: id, group: Group.find_by_id(group_id), title: title, price: price, location: location, images: images, text: text, link: link)
 
       if (@post.save)
         {

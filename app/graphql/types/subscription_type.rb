@@ -3,10 +3,10 @@ module Types
     field :id, ID, null: false do
       description "This subscriptions's id."
     end
-    field :group, GroupType, null: false do
+    field :group, [GroupType], null: false do
       description "This subscription's group."
     end
-    field :user, UserType, null: false do
+    field :user, [UserType], null: false do
       description "This subscription's user."
     end
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false do

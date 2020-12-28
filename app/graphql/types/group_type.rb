@@ -6,7 +6,7 @@ module Types
     field :name, String, null: false do
       description "This group's name."
     end
-    field :posts, PostType, null: true do
+    field :posts, [PostType], null: true do
       description "Posts from this group."
     end
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false do
