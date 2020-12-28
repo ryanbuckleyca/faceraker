@@ -20,31 +20,38 @@ task :fetch_ads => :environment do
   ]
 
   groups.each do |group|
+    user_group = Group.find_by_id(group)
+    user_group_posts = user_group.posts
     cessation_page = agent.get("https://www.facebook.com/groups/#{group}")
     cessation_page.css("div[role='article']").each_with_index do |post, i|
       puts "--------- AD ##{i+1} -----------"
 
-      post_id = JSON.parse(post["data-ft"])['mf_story_key']
+      id = JSON.parse(post["data-ft"])['mf_story_key']
+      next if user_group_posts.find_by_id(id)
+      
+      puts "New post! Let's log it..."
       # divs only have classes
       # which seem to be minimized and might change on each build
       # so instead, get children
       # but there could be times when certain children are missing
       # so we need a way to verify content of these
-      post_data = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[0]
-      post_imgs = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
+      data = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[0]
+      imgs = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
       
-      post_title = post_data.children[0].children[1].text
-      post_price = post_data.children[1].children[0].text
-      post_location = post_data.children[2].text
-      post_text = post_data.children[3].children[0].text
-      post_link = "https://m.facebook.com/groups/#{group}/permalink/#{post_id}"
+      title = data.children[0].children[1].text
+      price = data.children[1].children[0].text
+      location = data.children[2].text
+      text = data.children[3].children[0].text
+      link = "https://m.facebook.com/groups/#{group}/permalink/#{id}"
 
-      puts "Title: #{post_title}"
-      puts "Price: #{post_price}"
-      puts "Location: #{post_location}"
-      puts "Images: #{post_imgs.children.count}"
-      puts "Text: #{post_text}"
-      puts "Link: #{post_link}"
+      puts "Title: #{title}"
+      puts "Price: #{price}"
+      puts "Location: #{location}"
+      puts "Images: #{imgs.children.count}"
+      puts "Text: #{text}"
+      puts "Link: #{link}"
+
+      Post.create!(id: id, group: user_group, title: title, price: price, location: location, images: imgs, text: text, link: link)
     end
   end
 end
