@@ -28,8 +28,7 @@ task :fetch_ads => :environment do
 
       id = JSON.parse(post["data-ft"])['mf_story_key']
       next if user_group_posts.find_by_id(id)
-      
-      puts "New post! Let's log it..."
+
       # divs only have classes
       # which seem to be minimized and might change on each build
       # so instead, get children
