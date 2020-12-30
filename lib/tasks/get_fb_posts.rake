@@ -1,4 +1,4 @@
-desc "Fetch ads"
+desc 'Fetch ads'
 task :fetch_ads => :environment do
   require 'rubygems'
   require 'mechanize'
@@ -6,12 +6,15 @@ task :fetch_ads => :environment do
   require 'json'
 
   agent = Mechanize.new
-  agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
-  login_page = agent.get('https://m.facebook.com/')
+  agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2;
+                      Nexus 4 Build/KOT49H)
+                      AppleWebKit/537.36 (KHTML, like Gecko)
+                      Chrome/34.0.1847.114 Mobile Safari/537.36'
+  agent.get('https://m.facebook.com/')
   login_form = agent.page.form_with(:method => 'POST')
   login_form.email = 'ryanbuckley@gmail.com'
   login_form.pass = ENV['FB_PASS']
-  page = agent.submit(login_form)
+  agent.submit(login_form)
   # add check to see if Not Now even exists first?
   agent.page.link_with(:text => 'Not Now').click
 
@@ -24,9 +27,9 @@ task :fetch_ads => :environment do
     user_group_posts = user_group.posts
     cessation_page = agent.get("https://www.facebook.com/groups/#{group}")
     cessation_page.css("div[role='article']").each_with_index do |post, i|
-      puts "--------- AD ##{i+1} -----------"
+      puts "--------- AD ##{i + 1} -----------"
 
-      id = JSON.parse(post["data-ft"])['mf_story_key']
+      id = JSON.parse(post['data-ft'])['mf_story_key']
       next if user_group_posts.find_by_id(id)
 
       # divs only have classes
@@ -35,15 +38,17 @@ task :fetch_ads => :environment do
       # but there could be times when certain children are missing
       # so we need a way to verify content of these
       data = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[0]
-      imgDiv = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
-      imgs = imgDiv.children.map do |img|
+      img_div = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
+      imgs = img_div.children.map do |img|
         img.children[0].attributes['src'].text
       end
-      priceInt = data.children[1].children[0].text.gsub!(/[^0-9.]/, '').to_i
+      price_int = data.children[1].children[0].text.gsub!(/[^0-9.]/, '').to_i
 
       title = data.children[0].children[1].text
-      price = priceInt == 0 ? nil : priceInt
+      price = price_int.zero? ? nil : price_int
       location = data.children[2].text
+      location += ', Montreal' unless location.include?(/[Mm]ont[-]?[rR]([eé]|oy)al/)
+      location += ', Quebec' unless location.include?(/[qQ]([cC]|u[eé]bec)/)
       text = data.children[3].children[0].text
       link = "https://m.facebook.com/groups/#{group}/permalink/#{id}"
 
