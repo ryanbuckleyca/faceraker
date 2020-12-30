@@ -35,7 +35,10 @@ task :fetch_ads => :environment do
       # but there could be times when certain children are missing
       # so we need a way to verify content of these
       data = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[0]
-      imgs = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
+      imgDiv = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
+      imgs = imgDiv.children.map do |img|
+        img.children[0].attributes['src'].text
+      end
       priceInt = data.children[1].children[0].text.gsub!(/[^0-9.]/, '').to_i
 
       title = data.children[0].children[1].text
@@ -47,11 +50,20 @@ task :fetch_ads => :environment do
       puts "Title: #{title}"
       puts "Price: #{price}"
       puts "Location: #{location}"
-      puts "Images: #{imgs.children.count}"
+      puts "Images: #{imgs}"
       puts "Text: #{text}"
       puts "Link: #{link}"
 
-      Post.create!(id: id, group: user_group, title: title, price: price, location: location, images: imgs, text: text, link: link)
+      Post.create!(
+        id: id,
+        group: user_group,
+        title: title,
+        price: price,
+        location: location,
+        images: imgs,
+        text: text,
+        link: link
+      )
     end
   end
 end
