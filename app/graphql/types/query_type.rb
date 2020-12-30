@@ -8,6 +8,10 @@ module Types
       description "Query that returns total number of posts"
     end
 
+    field :users, [UserType], null: false do |variable|
+      description "Query that selects all users"
+    end
+
     def posts
       return Post.all
     end
@@ -15,6 +19,11 @@ module Types
     def postsCount
       return Post.count
     end
+
+    def users
+      return User.all
+    end
+
 
   end
 end

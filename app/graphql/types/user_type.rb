@@ -9,6 +9,15 @@ module Types
     field :name, String, null: false do
       description "This user's name."
     end
+    field :address, String, null: false do
+      description "The user's location."
+    end
+    field :longitude, String, null: true do
+      description "The longitude determined by geocoder gem based on address field"
+    end
+    field :latitude, String, null: true do
+      description "The latitude determined by geocoder gem based on address field"
+    end
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false do
       description "When the post was created"
     end
