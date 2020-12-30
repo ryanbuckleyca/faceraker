@@ -8,7 +8,7 @@ module Types
       description "Query that returns total number of posts"
     end
 
-    field :users, [UserType], null: false do |variable|
+    field :users, [UserType], null: false do
       description "Query that selects all users"
     end
 

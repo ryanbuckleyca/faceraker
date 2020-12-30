@@ -21,10 +21,10 @@ module Types
     field :location, String, null: true do
       description "The post's location, if any, provided in the post."
     end
-    field :longitude, String, null: true do
+    field :longitude, Float, null: true do
       description "The longitude determined by geocoder gem based on location field"
     end
-    field :latitude, String, null: true do
+    field :latitude, Float, null: true do
       description "The latitude determined by geocoder gem based on location field"
     end
     field :images, String, null: true do

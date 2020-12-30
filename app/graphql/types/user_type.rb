@@ -12,10 +12,10 @@ module Types
     field :address, String, null: false do
       description "The user's location."
     end
-    field :longitude, String, null: true do
+    field :longitude, Float, null: true do
       description "The longitude determined by geocoder gem based on address field"
     end
-    field :latitude, String, null: true do
+    field :latitude, Float, null: true do
       description "The latitude determined by geocoder gem based on address field"
     end
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false do

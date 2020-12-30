@@ -1,6 +1,5 @@
 class Post < ApplicationRecord
-
   belongs_to :group
-  geocoded_by :location, :if => :address_changed?
-  after_validation :geocode
+  geocoded_by :location, :if => :location_changed?
+  after_create :geocode
 end
