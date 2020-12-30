@@ -4,7 +4,7 @@ task :fetch_ads => :environment do
   require 'mechanize'
   require 'dotenv'
   require 'json'
-  
+
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
   login_page = agent.get('https://m.facebook.com/')
@@ -36,9 +36,10 @@ task :fetch_ads => :environment do
       # so we need a way to verify content of these
       data = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[0]
       imgs = post.css('div[data-ft="{\"tn\":\"H\"}"]').children[1]
-      
+      priceInt = data.children[1].children[0].text.gsub!(/[^0-9.]/, '').to_i
+
       title = data.children[0].children[1].text
-      price = data.children[1].children[0].text
+      price = priceInt == 0 ? nil : priceInt
       location = data.children[2].text
       text = data.children[3].children[0].text
       link = "https://m.facebook.com/groups/#{group}/permalink/#{id}"

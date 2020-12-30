@@ -9,7 +9,7 @@ module Types
     field :title, String, null: false do
       description "This post's title."
     end
-    field :price, Integer, null: true do
+    field :price, Float, null: true do
       description "This price, if listed, in the post."
     end
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false do

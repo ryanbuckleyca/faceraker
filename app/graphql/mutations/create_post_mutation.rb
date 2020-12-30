@@ -1,7 +1,7 @@
 module Mutations
   class CreatePostMutation < BaseMutation
     field :post, Types::PostType, null: false
-    
+
     argument :id, ID, required: true do
       description "This post's required id. It will autoincrement, but should be set to the FB value"
     end
@@ -11,7 +11,7 @@ module Mutations
     argument :title, String, required: true do
       description "This post's title. A string, cannot be null"
     end
-    argument :price, Integer, required: false do
+    argument :price, Float, required: false do
       description "This price as an integer, if listed, in the post. Sometimes there will not be a price."
     end
     argument :location, String, required: false do
