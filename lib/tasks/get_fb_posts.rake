@@ -6,10 +6,7 @@ task :fetch_ads => :environment do
   require 'json'
 
   agent = Mechanize.new
-  agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2;
-                      Nexus 4 Build/KOT49H)
-                      AppleWebKit/537.36 (KHTML, like Gecko)
-                      Chrome/34.0.1847.114 Mobile Safari/537.36'
+  agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
   agent.get('https://m.facebook.com/')
   login_form = agent.page.form_with(:method => 'POST')
   login_form.email = 'ryanbuckley@gmail.com'
@@ -18,6 +15,7 @@ task :fetch_ads => :environment do
   # add check to see if Not Now even exists first?
   agent.page.link_with(:text => 'Not Now').click
 
+  # app could be expanded to mutliple groups
   groups = [
     '263590541122539'
   ]
@@ -47,8 +45,13 @@ task :fetch_ads => :environment do
       title = data.children[0].children[1].text
       price = price_int.zero? ? nil : price_int
       location = data.children[2].text
-      location += ', Montreal' unless location.include?(/[Mm]ont[-]?[rR]([eé]|oy)al/)
-      location += ', Quebec' unless location.include?(/[qQ]([cC]|u[eé]bec)/)
+      # remove variations of Mtl, QC
+      location.gsub!(/[Mm]ont[-]?[rR]([eé]|oy)al/, '') if location
+      location.gsub!(/[qQ]([cC]|u[eé]bec)/, '') if location
+      puts "location is #{location}"
+      puts "location.match(/[a-zA-z0-9]/) is #{location.match(/[a-zA-z0-9]/)}"
+      location = 'Cimatière Notre Dame Des Neiges' unless location.match(/[a-zA-z0-9]/)
+      location += ', Montréal, Québec'
       text = data.children[3].children[0].text
       link = "https://m.facebook.com/groups/#{group}/permalink/#{id}"
 
