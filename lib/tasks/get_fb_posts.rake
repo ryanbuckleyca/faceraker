@@ -48,10 +48,12 @@ task :fetch_ads => :environment do
       # remove variations of Mtl, QC
       location.gsub!(/[Mm]ont[-]?[rR]([eé]|oy)al/, '') if location
       location.gsub!(/[qQ]([cC]|u[eé]bec)/, '') if location
-      puts "location is #{location}"
-      puts "location.match(/[a-zA-z0-9]/) is #{location.match(/[a-zA-z0-9]/)}"
-      location = 'Cimatière Notre Dame Des Neiges' unless location.match(/[a-zA-z0-9]/)
-      location += ', Montréal, Québec'
+      if location.match(/[a-zA-z0-9]/)
+        location += ', '
+      else
+        location = ''
+      end
+      location += 'Montréal, Québec'
       text = data.children[3].children[0].text
       link = "https://m.facebook.com/groups/#{group}/permalink/#{id}"
 
