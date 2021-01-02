@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.6'
+gem 'pg'
 gem 'mechanize'
 gem 'geocoder'
 gem 'dotenv-rails', :groups => [:development, :test]
