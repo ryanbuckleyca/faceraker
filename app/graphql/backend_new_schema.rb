@@ -1,4 +1,4 @@
-class RailsGraphqlSchema < GraphQL::Schema
+class BackendNewSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
 
