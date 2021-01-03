@@ -54,8 +54,9 @@ task :fetch_ads => :environment do
         location = ''
       end
       location += 'Montréal, Québec'
+      # TODO: add .click on More text to load full description
       text = data.children[3].children[0].text
-      link = "https://m.facebook.com/groups/#{group}/permalink/#{id}"
+      link = "https://facebook.com/groups/#{group}/permalink/#{id}"
 
       puts "Title: #{title}"
       puts "Price: #{price}"

@@ -1,0 +1,17 @@
+entrypoint: bundle exec rackup --port $PORT
+env: flex
+runtime: ruby
+
+env_variables:
+  SECRET_KEY_BASE: 097c72556c22d2cbc7b89976eb64f8eefdc7ca4efd43687cd76583e1cc9a4c0fb88a5ac7f30618a615de1162be2cf3f0fa9b351cb4445be3a7a540668dca5a45
+
+# This sample incurs costs to run on the App Engine flexible environment.
+# The settings below are to reduce costs during testing and are not appropriate
+# for production use. For more information, see:
+# https://cloud.google.com/appengine/docs/flexible/ruby/configuring-your-app-with-app-yaml
+manual_scaling:
+  instances: 1
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
