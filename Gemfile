@@ -9,6 +9,7 @@ gem 'graphiql-rails', '~> 1.7'
 gem 'graphql', '~> 1.11'
 gem 'mechanize'
 gem 'rake'
+gem 'rack-timeout', '0.3.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.4'
