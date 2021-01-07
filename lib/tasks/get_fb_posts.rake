@@ -87,13 +87,21 @@ task :fetch_ads => :environment do
         link: link
       )
 
-      puts "post was created as: #{post.to_json}"
-
-      # uri = URI('https://louwer-api.herokuapp.com/')
+      # uri = URI('https://louwer-api.herokuapp.com/graphql?')
       # req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
-      # req.body = {
-        
-      # }.to_json
+      reqbody = "{
+        id: #{post.id},
+        groupId: #{post.group.id},
+        title:\"#{post.title.gsub('"', '\"')}\",
+        price: #{post.price},
+        location: \"#{post.location.gsub('"', '\"')}\",
+        longitude: #{post.longitude},
+        latitude: #{post.latitude},
+        images: \"#{post.images.gsub('"', '\"')}\",
+        text: \"#{post.text.gsub('"', '\"')}\",
+        link: \"#{post.link.gsub('"', '\"')}\"
+      }"
+      puts "req.body is: #{reqbody}"
       # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
       #   http.request(req)
       # end

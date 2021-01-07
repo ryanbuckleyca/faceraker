@@ -17,10 +17,10 @@ module Mutations
     argument :location, String, required: false do
       description "The post's location as string, if any, provided in the post. Sometimes there will not be a location"
     end
-    argument :longitude, String, required: false do
+    argument :longitude, Float, required: false do
       description "The post's longitude as string, if any, provided in the post. Sometimes there will not be a location"
     end
-    argument :latitude, String, required: false do
+    argument :latitude, Float, required: false do
       description "The post's latitude as string, if any, provided in the post. Sometimes there will not be a location"
     end
     argument :images, String, required: false do
