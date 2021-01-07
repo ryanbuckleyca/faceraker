@@ -3,6 +3,8 @@ task :fetch_ads => :environment do
   require 'rubygems'
   require 'mechanize'
   require 'dotenv'
+  require 'net/http'
+  require 'uri'
   require 'json'
 
   agent = Mechanize.new
@@ -10,9 +12,18 @@ task :fetch_ads => :environment do
   agent.get('https://m.facebook.com/')
   login_form = agent.page.form_with(:method => 'POST')
   login_form.email = 'ryanbuckley@gmail.com'
+  puts "env is loaded" if ENV['FB_PASS']
   login_form.pass = ENV['FB_PASS']
   agent.submit(login_form)
   # add check to see if Not Now even exists first?
+  # TODO: cannot connect to Facebook from Heroku
+  # IP address isn't recognized by FB, so I get logged out
+  # will have to run locally, then push DB to Production?
+  # might be best to do that with the frontend
+  # run this locally on my machine with shell script
+  # then run front end push
+  # https://www.reddit.com/r/facebook/comments/kqcvla/cannot_login_to_account_from_another_ip/
+  # https://www.facebook.com/help/community/question/?id=411802246907577&added&rdrhc
   agent.page.link_with(:text => 'Not Now').click
 
   # app could be expanded to mutliple groups
@@ -65,7 +76,7 @@ task :fetch_ads => :environment do
       puts "Text: #{text}"
       puts "Link: #{link}"
 
-      Post.create!(
+      post = Post.create!(
         id: id,
         group: user_group,
         title: title,
@@ -75,6 +86,17 @@ task :fetch_ads => :environment do
         text: text,
         link: link
       )
+
+      puts "post was created as: #{post.to_json}"
+
+      # uri = URI('https://louwer-api.herokuapp.com/')
+      # req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+      # req.body = {
+        
+      # }.to_json
+      # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+      #   http.request(req)
+      # end
     end
   end
 end

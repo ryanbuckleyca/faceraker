@@ -17,6 +17,12 @@ module Mutations
     argument :location, String, required: false do
       description "The post's location as string, if any, provided in the post. Sometimes there will not be a location"
     end
+    argument :longitude, String, required: false do
+      description "The post's longitude as string, if any, provided in the post. Sometimes there will not be a location"
+    end
+    argument :latitude, String, required: false do
+      description "The post's latitude as string, if any, provided in the post. Sometimes there will not be a location"
+    end
     argument :images, String, required: false do
       description "String of Images listed in the post, if any. Sometimes there will not be images."
     end
@@ -27,8 +33,8 @@ module Mutations
       description "Permalink to the post. String should be automatically determined by groupID and postID."
     end
 
-    def resolve(id:, group_id:, title:, price:, location:, images:, text:, link:)
-      @post = Post.new(id: id, group: Group.find_by_id(group_id), title: title, price: price, location: location, images: images, text: text, link: link)
+    def resolve(id:, group_id:, title:, price:, location:, longitude:, latitude:, images:, text:, link:)
+      @post = Post.new(id: id, group: Group.find_by_id(group_id), title: title, price: price, location: location, longitude: longitude, latitude: latitude, images: images, text: text, link: link)
 
       if (@post.save)
         {
