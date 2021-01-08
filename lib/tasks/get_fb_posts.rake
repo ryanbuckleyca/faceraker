@@ -87,24 +87,38 @@ task :fetch_ads => :environment do
         link: link
       )
 
-      # uri = URI('https://louwer-api.herokuapp.com/graphql?')
-      # req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
-      reqbody = "{
-        id: #{post.id},
-        groupId: #{post.group.id},
-        title:\"#{post.title.gsub('"', '\"')}\",
-        price: #{post.price},
-        location: \"#{post.location.gsub('"', '\"')}\",
-        longitude: #{post.longitude},
-        latitude: #{post.latitude},
-        images: \"#{post.images.gsub('"', '\"')}\",
-        text: \"#{post.text.gsub('"', '\"')}\",
-        link: \"#{post.link.gsub('"', '\"')}\"
+      query = "mutation {
+        createPostMutation(
+          input:{
+            id: #{post.id},
+            groupId: #{post.group.id},
+            title:\"#{post.title.gsub('"', '\"')}\",
+            price: #{post.price},
+            location: \"#{post.location.gsub('"', '\"')}\",
+            longitude: #{post.longitude},
+            latitude: #{post.latitude},
+            images: \"#{post.images.gsub('"', '\"')}\",
+            text: \"#{post.text.gsub('"', '\"')}\",
+            link: \"#{post.link.gsub('"', '\"')}\"
+          }
+        ) {
+          post {
+            id
+            group { id, name }
+            title
+            price
+            location
+            longitude
+            latitude
+            images
+            text
+            link
+          }
+        }
       }"
-      puts "req.body is: #{reqbody}"
-      # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      #   http.request(req)
-      # end
+      uri = URI("https://louwer-api.herokuapp.com/graphql?#{query}")
+      
+      puts "uri is: #{uri}"
     end
   end
 end
