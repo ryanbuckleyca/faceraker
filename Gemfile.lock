@@ -79,6 +79,9 @@ GEM
       railties
       sprockets-rails
     graphql (1.11.6)
+    graphql-client (0.16.0)
+      activesupport (>= 3.0)
+      graphql (~> 1.8)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (1.8.7)
@@ -210,6 +213,7 @@ DEPENDENCIES
   geocoder
   graphiql-rails (~> 1.7)
   graphql (~> 1.11)
+  graphql-client
   listen (~> 3.2)
   mechanize
   pg (>= 0.18, < 2.0)

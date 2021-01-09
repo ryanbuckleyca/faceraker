@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+rails db:drop
+rails db:create
+rails db:migrate
+rails db:seed
+rake fetch_ads

@@ -3,10 +3,10 @@ task :fetch_ads => :environment do
   require 'rubygems'
   require 'mechanize'
   require 'dotenv'
-  require 'net/http'
-  require 'uri'
   require 'json'
-
+  require "graphql/client"
+  require "graphql/client/http"
+  
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
   agent.get('https://m.facebook.com/')
@@ -87,38 +87,75 @@ task :fetch_ads => :environment do
         link: link
       )
 
-      query = "mutation {
-        createPostMutation(
-          input:{
-            id: #{post.id},
-            groupId: #{post.group.id},
-            title:\"#{post.title.gsub('"', '\"')}\",
-            price: #{post.price},
-            location: \"#{post.location.gsub('"', '\"')}\",
-            longitude: #{post.longitude},
-            latitude: #{post.latitude},
-            images: \"#{post.images.gsub('"', '\"')}\",
-            text: \"#{post.text.gsub('"', '\"')}\",
-            link: \"#{post.link.gsub('"', '\"')}\"
-          }
-        ) {
-          post {
-            id
-            group { id, name }
-            title
-            price
-            location
-            longitude
-            latitude
-            images
-            text
-            link
-          }
+      data = {
+        id: post.id,
+        groupId: post.group.id,
+        title: post.title,
+        price: post.price,
+        location: post.location,
+        longitude: post.longitude,
+        latitude: post.latitude,
+        images: post.images,
+        text: post.text,
+        link: post.link
+      }
+
+      # query = "{ mutation createPostMutation($data) {
+      #   createPostMutation(input: $data) {
+      #     post {
+      #       id
+      #       group { id, name }
+      #       title
+      #       price
+      #       location
+      #       longitude
+      #       latitude
+      #       images
+      #       text
+      #       link
+      #     }
+      #   }
+      # }"
+
+      module SWAPI
+        HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql") do
+          def headers(context)
+            { "User-Agent": "My Client" }
+          end
+        end  
+
+        Schema = GraphQL::Client.load_schema(HTTP)
+        Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
+      end
+
+      HeroNameQuery = SWAPI::Client.parse <<-'GRAPHQL'
+        query {
+          posts
         }
-      }"
-      uri = URI("https://louwer-api.herokuapp.com/graphql?#{query}")
+      GRAPHQL
+
+      result = SWAPI::Client.query(HeroNameQuery)
+
+      # The raw data is Hash of JSON values
+      # result["data"]["luke"]["homePlanet"]
+
+      # The wrapped result allows to you access data with Ruby methods
+      pp result
+
+      # query = { "query": "{posts{id}}" }.to_json
+
+      # uri = URI('http://louwer-api.herokuapp.com/graphql')
+      # http = Net::HTTP.new(uri.host, uri.port)
       
-      puts "uri is: #{uri}"
+      # request = Net::HTTP::Post.new(uri.path)
+      
+      # request['Content-Type'] = 'application/json'
+      # request['Accept'] = 'application/json'
+
+      # request.body = query
+      # puts "request is: #{request.body}"      
+      # response = http.request(request)
+      # puts "response is: #{response.body}"      
     end
   end
 end
