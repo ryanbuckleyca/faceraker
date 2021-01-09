@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+heroku run -a louwer-api rails db:migrate
+heroku run -a louwer-api rails db:seed

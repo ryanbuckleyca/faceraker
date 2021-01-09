@@ -6,6 +6,8 @@ task :fetch_ads => :environment do
   require 'json'
   require "graphql/client"
   require "graphql/client/http"
+
+=begin
   
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
@@ -117,31 +119,6 @@ task :fetch_ads => :environment do
       #   }
       # }"
 
-      module SWAPI
-        HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql") do
-          def headers(context)
-            { "User-Agent": "My Client" }
-          end
-        end  
-
-        Schema = GraphQL::Client.load_schema(HTTP)
-        Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
-      end
-
-      HeroNameQuery = SWAPI::Client.parse <<-'GRAPHQL'
-        query {
-          posts
-        }
-      GRAPHQL
-
-      result = SWAPI::Client.query(HeroNameQuery)
-
-      # The raw data is Hash of JSON values
-      # result["data"]["luke"]["homePlanet"]
-
-      # The wrapped result allows to you access data with Ruby methods
-      pp result
-
       # query = { "query": "{posts{id}}" }.to_json
 
       # uri = URI('http://louwer-api.herokuapp.com/graphql')
@@ -158,4 +135,42 @@ task :fetch_ads => :environment do
       # puts "response is: #{response.body}"      
     end
   end
+
+=end
+
+  data = Post.all.sample
+  puts "Post.sample is #{data}"
+
+  module STAPI
+    HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql") 
+    Schema = GraphQL::Client.load_schema(HTTP)
+    Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
+  end
+
+  module PostType
+    Query = STAPI::Client.parse <<-'GRAPHQL'
+      mutation createPostMutation(input: $input) {
+          post {
+            id
+            group {
+              id
+              name
+            }
+            title
+            price
+            location
+            longitude
+            latitude
+            images
+            text
+            link
+          }
+        }
+    GRAPHQL
+  end
+
+  result = STAPI::Client.query(PostType::Query, variables: {input: data})
+
+  pp result
+
 end
