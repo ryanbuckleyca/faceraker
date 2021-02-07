@@ -3,7 +3,7 @@ class CreatePosts < ActiveRecord::Migration[6.0]
     create_table :posts do |t|
       t.references :group, null: false, foreign_key: true
       t.string :title
-      t.string :price
+      t.integer :price
       t.string :location
       t.float :longitude
       t.float :latitude

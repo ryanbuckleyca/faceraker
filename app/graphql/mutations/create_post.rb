@@ -11,7 +11,7 @@ module Mutations
     argument :title, String, required: true do
       description "This post's title. A string, cannot be null"
     end
-    argument :price, Float, required: false do
+    argument :price, Integer, required: false do
       description "This price as an integer, if listed, in the post. Sometimes there will not be a price."
     end
     argument :location, String, required: false do

@@ -6,7 +6,48 @@ task :fetch_ads => :environment do
   require 'json'
   require "graphql/client"
   require "graphql/client/http"
-=begin
+
+  module SWAPI
+    # Configure GraphQL endpoint using the basic HTTP network adapter.
+    HTTP = GraphQL::Client::HTTP.new("http://louer.herokuapp.com/graphql") do
+      def headers(context)
+        { "User-Agent": "My Client" }
+      end
+    end  
+    # Fetch latest schema on init, this will make a network request
+    Schema = GraphQL::Client.load_schema(HTTP)
+    Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
+  end
+
+  CreatePost = SWAPI::Client.parse <<-'GRAPHQL'
+    mutation($data: CreatePostInput!) { 
+      createPost(input: $data) {
+        post {
+          id
+          group { id, name }
+          title
+          price
+          location
+          longitude
+          latitude
+          images
+          text
+          link
+        }
+      }
+    }
+  GRAPHQL
+
+  # PostsQuery = SWAPI::Client.parse <<-'GRAPHQL'
+  #   query {
+  #     posts {
+  #       id
+  #     }
+  #   }
+  # GRAPHQL
+  # getPosts = SWAPI::Client.query(PostsQuery)
+  # pp getPosts
+
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
   agent.get('https://m.facebook.com/')
@@ -66,7 +107,7 @@ task :fetch_ads => :environment do
     puts "Text: #{text}"
     puts "Link: #{link}"
 
-    post = Post.create!(
+    post = Post.new(
       id: id,
       group: user_group,
       title: title,
@@ -76,33 +117,10 @@ task :fetch_ads => :environment do
       text: text,
       link: link
     )
-=end
 
-    module SWAPI
-      # Configure GraphQL endpoint using the basic HTTP network adapter.
-      HTTP = GraphQL::Client::HTTP.new("http://localhost:3000/graphql") do
-        def headers(context)
-          { "User-Agent": "My Client" }
-        end
-      end  
-      
-      # Fetch latest schema on init, this will make a network request
-      Schema = GraphQL::Client.load_schema(HTTP)
-      
-      Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
-    end
+    pp "new post to save is: #{post}"
 
-    post = Post.all.sample
-    
-    PostsQuery = SWAPI::Client.parse <<-'GRAPHQL'
-      query {
-        posts {
-          id
-        }
-      }
-    GRAPHQL
-
-    data = {
+    result = SWAPI::Client.query(CreatePost, variables: {data: {
       id: post.id,
       groupId: post.group.id,
       title: post.title,
@@ -113,31 +131,11 @@ task :fetch_ads => :environment do
       images: post.images,
       text: post.text,
       link: post.link
-    }
+    }})
 
-
-    CreatePost = SWAPI::Client.parse <<-'GRAPHQL'
-    mutation($data: CreatePostInput!) { 
-      createPost(input: $data) {
-        post {
-          id
-          group { id, name }
-          title
-          price
-          location
-          longitude
-          latitude
-          images
-          text
-          link
-        }
-      }
-    }
-    GRAPHQL
-
-    result = SWAPI::Client.query(PostsQuery)
+    puts "result of sending last post to graphql is:"
     pp result
 
- # end
+  end
 
 end

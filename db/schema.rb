@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 2020_12_27_230403) do
   create_table "posts", force: :cascade do |t|
     t.bigint "group_id", null: false
     t.string "title"
-    t.string "price"
+    t.integer "price"
     t.string "location"
     t.float "longitude"
     t.float "latitude"
