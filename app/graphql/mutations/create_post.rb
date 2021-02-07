@@ -1,5 +1,5 @@
 module Mutations
-  class CreatePostMutation < BaseMutation
+  class CreatePost < BaseMutation
     field :post, Types::PostType, null: false
 
     argument :id, ID, required: true do

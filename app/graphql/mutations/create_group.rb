@@ -1,5 +1,5 @@
 module Mutations
-  class CreateGroupMutation < BaseMutation
+  class CreateGroup < BaseMutation
     field :group, Types::GroupType, null: false
     
     argument :id, ID, required: true do

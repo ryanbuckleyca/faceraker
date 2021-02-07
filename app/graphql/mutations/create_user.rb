@@ -1,5 +1,5 @@
 module Mutations
-  class CreateUserMutation < BaseMutation
+  class CreateUser < BaseMutation
     field :user, Types::UserType, null: false
 
     argument :id, ID, required: true do

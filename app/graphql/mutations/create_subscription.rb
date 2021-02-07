@@ -1,5 +1,5 @@
 module Mutations
-  class CreateSubscriptionMutation < BaseMutation
+  class CreateSubscription < BaseMutation
     field :subscription, Types::SubscriptionType, null: false
     
     argument :id, ID, required: true do
