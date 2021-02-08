@@ -8,8 +8,8 @@ task :fetch_ads => :environment do
   require "graphql/client/http"
 
   module SWAPI
-    # HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql") do
-    HTTP = GraphQL::Client::HTTP.new("http://localhost:8000/graphql")
+    HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql")
+    # HTTP = GraphQL::Client::HTTP.new("http://localhost:8000/graphql")
     Schema = GraphQL::Client.load_schema(HTTP)
     Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
   end
