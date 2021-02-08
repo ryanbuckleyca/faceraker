@@ -8,13 +8,8 @@ task :fetch_ads => :environment do
   require "graphql/client/http"
 
   module SWAPI
-    # Configure GraphQL endpoint using the basic HTTP network adapter.
-    HTTP = GraphQL::Client::HTTP.new("http://louer.herokuapp.com/graphql") do
-      def headers(context)
-        { "User-Agent": "My Client" }
-      end
-    end  
-    # Fetch latest schema on init, this will make a network request
+    # HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql") do
+    HTTP = GraphQL::Client::HTTP.new("http://localhost:8000/graphql")
     Schema = GraphQL::Client.load_schema(HTTP)
     Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
   end
@@ -38,15 +33,13 @@ task :fetch_ads => :environment do
     }
   GRAPHQL
 
-  # PostsQuery = SWAPI::Client.parse <<-'GRAPHQL'
-  #   query {
-  #     posts {
-  #       id
-  #     }
-  #   }
-  # GRAPHQL
-  # getPosts = SWAPI::Client.query(PostsQuery)
-  # pp getPosts
+  PostByID = SWAPI::Client.parse <<-'GRAPHQL'
+    query($id: String!) { 
+      post(id: $id) {
+        id
+      }
+    }
+  GRAPHQL
 
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
@@ -63,14 +56,12 @@ task :fetch_ads => :environment do
   # app could be expanded to mutliple groups
   group = '263590541122539'
 
-  user_group = Group.find_by_id(group)
-  user_group_posts = user_group.posts
   cessation_page = agent.get("https://www.facebook.com/groups/#{group}")
   cessation_page.css("div[role='article']").each_with_index do |post, i|
     puts "--------- AD ##{i + 1} -----------"
 
     id = JSON.parse(post['data-ft'])['mf_story_key']
-    next if user_group_posts.find_by_id(id)
+    next if SWAPI::Client.query(PostByID, variables: {id: id})
 
     # divs only have classes
     # which seem to be minimized and might change on each build
@@ -107,6 +98,9 @@ task :fetch_ads => :environment do
     puts "Text: #{text}"
     puts "Link: #{link}"
 
+    # @TODO: basically just doing this to get geolocation
+    # but check to see if it happens through graphql anyways
+    # if so, could skip this step and just pass values to query
     post = Post.new(
       id: id,
       group: user_group,
@@ -117,8 +111,6 @@ task :fetch_ads => :environment do
       text: text,
       link: link
     )
-
-    pp "new post to save is: #{post}"
 
     result = SWAPI::Client.query(CreatePost, variables: {data: {
       id: post.id,
@@ -133,9 +125,12 @@ task :fetch_ads => :environment do
       link: post.link
     }})
 
-    puts "result of sending last post to graphql is:"
-    pp result
+    while !result.errors && !result.data do
+      result
+    end
 
+    pp "error!: #{result.errors.all.to_json}" if result.errors
+    
+    pp "saved: #{result.data.create_post.post.to_json}" if result.data
   end
-
 end

@@ -1,7 +1,8 @@
 #!/usr/bin/bash
 
+killall -9 rails
 rails db:drop
 rails db:create
 rails db:migrate
 rails db:seed
-rake fetch_ads
+rails s -p 8000

@@ -4,6 +4,11 @@ module Types
       description "Query that selects all posts"
     end
 
+    field :post, PostType, null: false do
+      argument :id, String, required: true
+      description "Query that selects a specific post by ID"
+    end
+
     field :postsCount, Integer, null: false do
       description "Query that returns total number of posts"
     end
@@ -16,7 +21,7 @@ module Types
       description "Query that selects all groups"
     end
 
-    field :group, [GroupType], null: false do
+    field :group, GroupType, null: false do
       argument :id, Integer, required: true
       description "Query that selects a group by ID"
     end
@@ -24,6 +29,11 @@ module Types
     def posts
       return Post.all
     end
+
+    def post(id: Integer)
+      return Post.find_by_id(id)
+    end
+
 
     def groups
       return Group.all
