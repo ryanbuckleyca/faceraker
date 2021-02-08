@@ -1,28 +1,28 @@
 module Types
   class QueryType < Types::BaseObject
-    field :posts, [PostType], null: false do
+    field :posts, [PostType], null: true do
       description "Query that selects all posts"
     end
 
-    field :post, PostType, null: false do
-      argument :id, String, required: true
+    field :post, PostType, null: true do
+      argument :id, ID, required: true
       description "Query that selects a specific post by ID"
     end
 
-    field :postsCount, Integer, null: false do
+    field :postsCount, Integer, null: true do
       description "Query that returns total number of posts"
     end
 
-    field :users, [UserType], null: false do
+    field :users, [UserType], null: true do
       description "Query that selects all users"
     end
 
-    field :groups, [GroupType], null: false do
+    field :groups, [GroupType], null: true do
       description "Query that selects all groups"
     end
 
-    field :group, GroupType, null: false do
-      argument :id, Integer, required: true
+    field :group, GroupType, null: true do
+      argument :id, ID, required: true
       description "Query that selects a group by ID"
     end
 
@@ -30,16 +30,15 @@ module Types
       return Post.all
     end
 
-    def post(id: Integer)
+    def post(id: ID)
       return Post.find_by_id(id)
     end
-
 
     def groups
       return Group.all
     end
 
-    def group(id: Integer)
+    def group(id: ID)
       return Group.find_by_id(id)
     end
 
@@ -50,7 +49,6 @@ module Types
     def users
       return User.all
     end
-
 
   end
 end

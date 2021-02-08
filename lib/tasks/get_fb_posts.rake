@@ -8,8 +8,8 @@ task :fetch_ads => :environment do
   require "graphql/client/http"
 
   module SWAPI
-    HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql")
-    # HTTP = GraphQL::Client::HTTP.new("http://localhost:8000/graphql")
+    # HTTP = GraphQL::Client::HTTP.new("http://louwer-api.herokuapp.com/graphql")
+    HTTP = GraphQL::Client::HTTP.new("http://localhost:8000/graphql")
     Schema = GraphQL::Client.load_schema(HTTP)
     Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
   end
@@ -34,7 +34,7 @@ task :fetch_ads => :environment do
   GRAPHQL
 
   PostByID = SWAPI::Client.parse <<-'GRAPHQL'
-    query($id: String!) { 
+    query($id: ID!) { 
       post(id: $id) {
         id
       }
@@ -61,7 +61,9 @@ task :fetch_ads => :environment do
     puts "--------- AD ##{i + 1} -----------"
 
     id = JSON.parse(post['data-ft'])['mf_story_key']
-    next if SWAPI::Client.query(PostByID, variables: {id: id})
+    record_exists = SWAPI::Client.query(PostByID, variables: { id: id }).data.post
+    pp "post already saved, moving on..." if record_exists
+    next if record_exists
 
     # divs only have classes
     # which seem to be minimized and might change on each build
@@ -87,49 +89,28 @@ task :fetch_ads => :environment do
       location = ''
     end
     location += 'Montréal, Québec'
-    # TODO: add .click on More text to load full description
+    # @TODO: add .click on More text to load full description
     text = data.children[3].children[0].text
     link = "https://facebook.com/groups/#{group}/permalink/#{id}"
 
-    puts "Title: #{title}"
-    puts "Price: #{price}"
-    puts "Location: #{location}"
-    puts "Images: #{imgs}"
-    puts "Text: #{text}"
-    puts "Link: #{link}"
-
-    # @TODO: basically just doing this to get geolocation
-    # but check to see if it happens through graphql anyways
-    # if so, could skip this step and just pass values to query
-    post = Post.new(
-      id: id,
-      group: user_group,
-      title: title,
-      price: price,
-      location: location,
-      images: imgs,
-      text: text,
-      link: link
-    )
-
-    result = SWAPI::Client.query(CreatePost, variables: {data: {
-      id: post.id,
-      groupId: post.group.id,
-      title: post.title,
-      price: post.price,
-      location: post.location,
-      longitude: post.longitude,
-      latitude: post.latitude,
-      images: post.images,
-      text: post.text,
-      link: post.link
-    }})
+    result = SWAPI::Client.query(CreatePost, variables: { 
+      data: {
+        id: id,
+        groupId: group,
+        title: title,
+        price: price,
+        location: location,
+        images: imgs.to_s,
+        text: text,
+        link: link
+      }
+    })
 
     while !result.errors && !result.data do
       result
     end
 
-    pp "error!: #{result.errors.all.to_json}" if result.errors
+    pp "error!: #{result.errors.all.to_json}" if result.errors.all
     
     pp "saved: #{result.data.create_post.post.to_json}" if result.data
   end
